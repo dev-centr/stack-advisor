@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "meta": {
+    "id": "dev-centr/toolchain-advisor",
+    "defaultBranch": "main",
+    "catalogPath": "catalog/advisor.json"
+  },
+  "steps": [
+    {
+      "id": "host",
+      "title": "Host environment",
+      "hint": "Where you sit and run your editor, terminal, and local builds.",
+      "options": [
+        { "id": "windows-native", "label": "Windows (native shell)" },
+        { "id": "windows-wsl2", "label": "Windows with WSL2" },
+        { "id": "linux", "label": "Linux" },
+        { "id": "macos", "label": "macOS" },
+        { "id": "remote", "label": "Remote / SSH / cloud dev box" }
+      ]
+    },
+    {
+      "id": "target",
+      "title": "Target output",
+      "hint": "What you ship or run when the project is done.",
+      "options": [
+        { "id": "windows-desktop", "label": "Windows desktop app (Win32 / WinUI)" },
+        { "id": "windows-console", "label": "Windows CLI / service" },
+        { "id": "linux-desktop", "label": "Linux desktop app" },
+        { "id": "linux-server", "label": "Linux server / container image" },
+        { "id": "macos-desktop", "label": "macOS desktop app" },
+        { "id": "web", "label": "Web (browser)" },
+        { "id": "mobile", "label": "Mobile (Android / iOS)" },
+        { "id": "library", "label": "Portable library / SDK" },
+        { "id": "embedded", "label": "Embedded / firmware" }
+      ]
+    },
+    {
+      "id": "language",
+      "title": "Primary language",
+      "hint": "Narrows toolchain families. Choose the closest match.",
+      "options": [
+        { "id": "cpp", "label": "C / C++" },
+        { "id": "dotnet", "label": "C# / .NET" },
+        { "id": "rust", "label": "Rust" },
+        { "id": "go", "label": "Go" },
+        { "id": "python", "label": "Python" },
+        { "id": "node", "label": "JavaScript / TypeScript (Node)" },
+        { "id": "other", "label": "Other / mixed stack" }
+      ]
+    },
+    {
+      "id": "toolchain",
+      "title": "Toolchain family",
+      "hint": "Compiler and linker stack. Leave as “help me choose” if unsure.",
+      "options": [
+        { "id": "auto", "label": "Help me choose" },
+        { "id": "msvc", "label": "Microsoft MSVC (Visual Studio Build Tools)" },
+        { "id": "mingw", "label": "MinGW-w64 / MSYS2 (GCC on Windows)" },
+        { "id": "clang", "label": "Clang / LLVM (incl. clang-cl on Windows)" },
+        { "id": "gcc-native", "label": "GCC (native on Linux)" },
+        { "id": "dotnet-sdk", "label": ".NET SDK" },
+        { "id": "rustup", "label": "rustup (Rust)" }
+      ]
+    },
+    {
+      "id": "execution",
+      "title": "Build & run model",
+      "hint": "Where compilation happens vs where the binary runs.",
+      "options": [
+        { "id": "native-host", "label": "Build and run on the host OS" },
+        { "id": "wsl-build", "label": "Build inside WSL; artifacts for Windows or Linux" },
+        { "id": "cross-on-host", "label": "Cross-compile on host (e.g. mingw on Linux)" },
+        { "id": "container", "label": "Build in container (Docker/Podman)" },
+        { "id": "ci-only", "label": "Local edit only; CI builds releases" }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "win-on-linux-mingw",
+      "match": { "host": ["linux"], "target": ["windows-desktop", "windows-console"], "language": ["cpp"], "toolchain": ["auto", "mingw"], "execution": ["cross-on-host", "ci-only"] },
+      "title": "Cross-compile Windows binaries from Linux",
+      "summary": "Use a MinGW-w64 cross toolchain on Linux (distro package or LLVM-MinGW). Validate with Wine only for smoke tests; use a Windows VM or CI for real QA.",
+      "tooling": ["mingw-w64 (x86_64-w64-mingw32-gcc)", "CMake with CMAKE_TOOLCHAIN_FILE", "GitHub Actions windows-latest for release builds"],
+      "caveats": ["Not all Windows APIs behave correctly under Wine", "Debuggers and signing require Windows"],
+      "docs": "https://docs.devcentr.org/general-knowledge/latest/"
+    },
+    {
+      "id": "win-cpp-wsl-vs-native",
+      "match": { "host": ["windows-wsl2"], "target": ["windows-desktop", "windows-console"], "language": ["cpp"], "toolchain": ["auto"], "execution": ["auto", "wsl-build", "native-host"] },
+      "title": "Windows C++ on a Windows + WSL2 machine",
+      "summary": "For shipping Windows binaries, prefer native MSVC or MinGW on Windows unless you have a strong Linux-only workflow. Use WSL2 when you need Linux build scripts, apt packages, or identical CI to Linux servers—but install a Windows-targeting toolchain inside WSL (mingw-w64) or build natively on Windows for fewer path surprises.",
+      "tooling": ["Native: Visual Studio Build Tools + MSVC", "Native: MSYS2 / mingw-w64", "WSL: sudo apt install mingw-w64; cmake -DCMAKE_SYSTEM_NAME=Windows", "Optional: clang-cl with Windows SDK"],
+      "caveats": ["Mixing \\ and / paths across WSL and Windows confuses some tools", "Debugging GUI apps across WSL boundary is awkward—use native Windows toolchain for UI work"],
+      "docs": "https://docs.devcentr.org/devcentr/latest/secrets-manager/explanation/connecting-to-wsl.html"
+    },
+    {
+      "id": "win-cpp-native-msvc",
+      "match": { "host": ["windows-native"], "target": ["windows-desktop", "windows-console"], "language": ["cpp"], "toolchain": ["auto", "msvc"], "execution": ["native-host"] },
+      "title": "Native Windows C++ with MSVC",
+      "summary": "Install Visual Studio Build Tools or full Visual Studio with the “Desktop development with C++” workload. This is the default for Win32, WinUI, and most third-party Windows libraries.",
+      "tooling": ["Visual Studio Build Tools", "CMake + Ninja or MSBuild", "Windows SDK"],
+      "caveats": ["MSVC object files are not link-compatible with MinGW—pick one family per project"],
+      "docs": ""
+    },
+    {
+      "id": "win-cpp-native-mingw",
+      "match": { "host": ["windows-native"], "target": ["windows-desktop", "windows-console"], "language": ["cpp"], "toolchain": ["mingw"], "execution": ["native-host"] },
+      "title": "Native Windows C++ with MinGW-w64",
+      "summary": "Install MSYS2 and the mingw-w64 toolchain. Good for open-source stacks, GCC-only dependencies, and avoiding the full Visual Studio install.",
+      "tooling": ["MSYS2", "pacman -S mingw-w64-ucrt-x86_64-toolchain", "CMake with -G Ninja"],
+      "caveats": ["Some proprietary libs ship MSVC import libs only", "Prefer UCRT toolchain over legacy mingw32 unless you know you need it"],
+      "docs": ""
+    },
+    {
+      "id": "linux-on-windows-wsl",
+      "match": { "host": ["windows-wsl2"], "target": ["linux-desktop", "linux-server"], "language": ["cpp", "python", "node", "go", "rust", "other"], "toolchain": ["auto", "gcc-native"], "execution": ["wsl-build", "native-host"] },
+      "title": "Linux targets from Windows via WSL2",
+      "summary": "Install your distro in WSL2 and use normal Linux packages (build-essential, rustup, etc.). Keep the repo on the Linux filesystem (/home/...) for best I/O; access from Windows via \\\\wsl$\\ when needed.",
+      "tooling": ["WSL2 distro (Ubuntu, Fedora, …)", "build-essential / distro toolchain", "Docker Desktop WSL2 backend (optional)"],
+      "caveats": ["Avoid building Linux binaries on /mnt/c/—slow and permission quirks", "GUI apps need WSLg or an X server"],
+      "docs": "https://docs.devcentr.org/devcentr/latest/secrets-manager/explanation/connecting-to-wsl.html"
+    },
+    {
+      "id": "dotnet-windows",
+      "match": { "host": ["windows-native", "windows-wsl2"], "target": ["windows-desktop", "windows-console", "web"], "language": ["dotnet"], "toolchain": ["dotnet-sdk", "auto"], "execution": ["native-host", "wsl-build"] },
+      "title": ".NET on Windows",
+      "summary": "Install the .NET SDK for your target band. Use native Windows for WinUI and tight Visual Studio integration; WSL is fine for ASP.NET and cross-platform libraries.",
+      "tooling": [".NET SDK", "Visual Studio or VS Code", "Optional: WSL for Linux-target builds (dotnet publish -r linux-x64)"],
+      "caveats": ["WinUI 3 projects generally require Windows-native tooling"],
+      "docs": ""
+    },
+    {
+      "id": "rust-cross",
+      "match": { "host": ["linux", "macos", "windows-native", "windows-wsl2"], "target": ["windows-console", "windows-desktop", "linux-server"], "language": ["rust"], "toolchain": ["rustup", "auto"], "execution": ["cross-on-host", "native-host", "ci-only"] },
+      "title": "Rust cross-compilation",
+      "summary": "Use rustup targets (rustup target add x86_64-pc-windows-msvc or x86_64-pc-windows-gnu). MSVC target needs the Windows SDK on Windows; GNU target needs mingw on Linux/macOS.",
+      "tooling": ["rustup", "cross (optional helper)", "cargo-zigbuild (advanced)"],
+      "caveats": ["msvc vs gnu ABI choice matters for linking C dependencies"],
+      "docs": ""
+    },
+    {
+      "id": "web-anywhere",
+      "match": { "host": ["windows-native", "windows-wsl2", "linux", "macos", "remote"], "target": ["web"], "language": ["node", "python", "other"], "toolchain": ["auto"], "execution": ["native-host", "container", "ci-only"] },
+      "title": "Web applications",
+      "summary": "Host OS matters less than runtime choice. Use Node LTS or your framework’s documented stack; containerize for parity with production.",
+      "tooling": ["Node.js LTS or framework CLI", "pnpm / npm", "Docker for production-like dev"],
+      "caveats": ["Match Node version to deployment target"],
+      "docs": ""
+    },
+    {
+      "id": "fallback",
+      "match": {},
+      "title": "General guidance",
+      "summary": "Complete each step above. DevCentr ranks recommendations by how many of your choices match known patterns. When in doubt: build on the same OS family as your target, or use the platform’s official SDK (MSVC for Windows desktop, Xcode for macOS, NDK for Android).",
+      "tooling": ["Document your choice in the repo README", "Pin toolchain versions in CI"],
+      "caveats": ["Cross-compilation saves dual-booting but adds debugging cost"],
+      "docs": "https://docs.devcentr.org/"
+    }
+  ]
+}

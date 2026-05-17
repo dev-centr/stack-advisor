@@ -1,0 +1,91 @@
+= SDL conventions for toolchain-advisor
+
+The catalog is authored in SDL, not JSON. JSON (`catalog/advisor.json`) is a **compiled artifact** for the static site bundle.
+
+== Root
+
+[source,sdlang]
+----
+toolchainAdvisor {
+    version 1
+    steps { ... }
+    recommendations { ... }
+}
+----
+
+== Steps and options (decision flow)
+
+[source,sdlang]
+----
+step {
+    id "toolchain"
+    title "Toolchain family"
+    hint "One-line help in the flow box."
+
+    option {
+        id "mingw"
+        label "MinGW-w64 / MSYS2"
+        era "modern"   // modern | legacy | transitional
+        overview """
+        Multi-line prose shown in the context panel (not in the list box).
+        """
+        timeline {
+            milestone {
+                period "2010s–today"
+                title "MinGW-w64 + UCRT"
+                summary "Short historical note."
+            }
+        }
+        alternate {
+            versus "msvc"
+            title "Microsoft MSVC"
+            summary "How this alternate differs."
+            preferWhen "When to pick the other path."
+            problemsSolved "What pain the chosen option addresses."
+        }
+    }
+}
+----
+
+== Recommendations (ranked guidance)
+
+Rules are **not** leaf nodes in the flow. They aggregate the full selection:
+
+[source,sdlang]
+----
+recommendation {
+    id "win-cpp-native-msvc"
+    title "..."
+    summary "..."
+    match {
+        host "windows-native"
+        target "windows-desktop" "windows-console"
+        toolchain "msvc" "auto"
+    }
+    tooling "Visual Studio Build Tools" "Windows SDK"
+    caveats "MSVC and MinGW are not link-compatible"
+    docs "https://..."
+}
+----
+
+== Differences from the old JSON shape
+
+| JSON (previous) | SDL (current)
+| Flat `steps[].options[]` with only `id`/`label` | Same ids, plus `era`, `overview`, `timeline`, `alternate` on each option
+| `recommendations[].match` as JSON object | `match { dimension "id" "id2" }` child tags
+| `tooling` / `caveats` arrays | Multiple string values on one tag: `tooling "a" "b"`
+| Comments impossible | `//` line comments and `"""` blocks for prose
+
+== Compile
+
+From monorepo (requires DMD + `devcentr/app` dependencies):
+
+[source,bash]
+----
+cd devcentr/app
+dub run --config=compile-catalog -- \
+  ../../toolchain-advisor/catalog/advisor.sdl \
+  ../../toolchain-advisor/catalog/advisor.json
+----
+
+Commit both `.sdl` and regenerated `.json` when prose or rules change.

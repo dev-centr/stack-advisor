@@ -1,0 +1,33 @@
+= toolchain-advisor
+
+Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, options, and recommendation rules.
+
+Used by:
+
+* **DevCentr desktop** — git clone into `~/.dev-center/toolchain-advisor/`
+* **https://devcentr.org/toolchain-advisor** — static bundle + optional live fetch from this repo
+
+== Layout
+
+[source]
+----
+catalog/advisor.json     # Source of truth (steps + recommendations)
+lib/                     # Shared ranking/parser (@dev-centr/toolchain-advisor-core)
+----
+
+== Editing the catalog
+
+1. Change `catalog/advisor.json` (valid JSON).
+2. Open a PR; merge to `main`.
+3. Desktop app refreshes on next daily sync or **Refresh definitions** in the advisor.
+4. devcentr.org CI copies the catalog on build; the live site can also fetch raw `main`.
+
+== Consumers
+
+| Client | How it loads
+| DevCentr app | `git clone` / `git pull` → `catalog/advisor.json`
+| devcentr.org | Build-time copy to `public/catalog/` + runtime fetch from raw GitHub URL
+
+== Related
+
+* DevCentr spec: `devcentr/docs/modules/specifications/pages/components/toolchain-advisor.adoc`
