@@ -1,32 +1,33 @@
 = toolchain-advisor
 
-Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, options, and recommendation rules.
-
-Used by:
-
-* **DevCentr desktop** — git clone into `~/.dev-center/toolchain-advisor/`
-* **https://devcentr.org/toolchain-advisor** — static bundle + optional live fetch from this repo
+Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, options (with timeline and alternate context), and recommendation rules.
 
 == Layout
 
 [source]
 ----
-catalog/advisor.json     # Source of truth (steps + recommendations)
+catalog/advisor.sdl      # Source of truth (author here)
+catalog/advisor.json     # Compiled artifact (web bundle; commit after compile)
 lib/                     # Shared ranking/parser (@dev-centr/toolchain-advisor-core)
+scripts/compile-sdl.mjs  # SDL → JSON (Node; no DMD required)
+docs/SDL-CONVENTIONS.adoc
 ----
 
-== Editing the catalog
+== Edit workflow
 
-1. Change `catalog/advisor.json` (valid JSON).
-2. Open a PR; merge to `main`.
-3. Desktop app refreshes on next daily sync or **Refresh definitions** in the advisor.
-4. devcentr.org CI copies the catalog on build; the live site can also fetch raw `main`.
+1. Change `catalog/advisor.sdl`.
+2. Run `node scripts/compile-sdl.mjs` and commit both `.sdl` and `.json`.
+3. Open a PR; CI validates compile + parse.
+4. **DevCentr desktop** pulls via `git` (Settings → definitions repo URL).
+5. **devcentr.org** bundles `advisor.json` at build when CI checks out this repo.
 
 == Consumers
 
 | Client | How it loads
-| DevCentr app | `git clone` / `git pull` → `catalog/advisor.json`
-| devcentr.org | Build-time copy to `public/catalog/` + runtime fetch from raw GitHub URL
+| DevCentr desktop | `git clone` / `git pull` → reads `catalog/advisor.sdl`
+| devcentr.org | Build: checkout repo, `compile-sdl.mjs`, copy to `public/catalog/advisor.json`
+
+Default repo: `https://github.com/dev-centr/toolchain-advisor.git`
 
 == Related
 

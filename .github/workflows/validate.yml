@@ -14,5 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Validate committed JSON catalog
-        run: node --input-type=module -e "import { readFileSync } from 'fs'; import { parseAdvisorCatalog } from './lib/src/index.ts'; const c = parseAdvisorCatalog(JSON.parse(readFileSync('catalog/advisor.json','utf8'))); if (!c.steps.length) throw new Error('empty'); console.log('OK', c.steps.length, 'steps');"
+      - name: Compile SDL to JSON
+        run: node scripts/compile-sdl.mjs
+
+      - name: Validate compiled catalog
+        run: node --input-type=module -e "import { readFileSync } from 'fs'; import { parseAdvisorCatalog } from './lib/src/index.ts'; const c = parseAdvisorCatalog(JSON.parse(readFileSync('catalog/advisor.json','utf8'))); if (!c.steps.length) throw new Error('empty'); const mingw = c.steps.find(s=>s.id==='toolchain')?.options.find(o=>o.id==='mingw'); if (!mingw?.timeline?.length) throw new Error('missing timeline'); console.log('OK', c.steps.length, 'steps', c.recommendations.length, 'rules');"
