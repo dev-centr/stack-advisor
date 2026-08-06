@@ -1,6 +1,32 @@
+ifndef::env-github[:icons: font]
+:toc: preamble
+:toclevels: 2
+:sectanchors:
+
+ifndef::env-github[]
+image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors,link=https://github.com/dev-centr/toolchain-advisor/graphs/contributors]
+image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks,link=https://github.com/dev-centr/toolchain-advisor/network/members]
+image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars,link=https://github.com/dev-centr/toolchain-advisor/stargazers]
+image:https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge[Issues,link=https://github.com/dev-centr/toolchain-advisor/issues]
+endif::[]
+
+ifdef::env-github[]
+image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors]
+image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks]
+image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars]
+image:https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge[Issues]
+endif::[]
+
 = toolchain-advisor
 
 Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, options (with timeline and alternate context), and recommendation rules.
+
+link:https://github.com/dev-centr/toolchain-advisor/issues[Report Bug] ·
+link:https://github.com/dev-centr/toolchain-advisor/issues[Request Feature]
+
+== About The Project
+
+This repository holds the source-of-truth advisor catalog consumed by DevCentr desktop and devcentr.org.
 
 == Layout
 
@@ -13,7 +39,9 @@ scripts/compile-sdl.mjs  # SDL → JSON (Node; no DMD required)
 docs/SDL-CONVENTIONS.adoc
 ----
 
-== Edit workflow
+== Usage
+
+=== Edit workflow
 
 1. Change `catalog/advisor.sdl`.
 2. Run `node scripts/compile-sdl.mjs` and commit both `.sdl` and `.json`.
@@ -21,7 +49,7 @@ docs/SDL-CONVENTIONS.adoc
 4. **DevCentr desktop** pulls via `git` (Settings → definitions repo URL).
 5. **devcentr.org** bundles `advisor.json` at build when CI checks out this repo.
 
-== Consumers
+=== Consumers
 
 | Client | How it loads
 | DevCentr desktop | `git clone` / `git pull` → reads `catalog/advisor.sdl`
@@ -32,3 +60,10 @@ Default repo: `https://github.com/dev-centr/toolchain-advisor.git`
 == Related
 
 * DevCentr spec: `devcentr/docs/modules/specifications/pages/components/toolchain-advisor.adoc`
+
+== Contact
+
+DevCentr.org — support@devcentr.org
+
+* Project: https://github.com/dev-centr/toolchain-advisor
+* Site: https://devcentr.org
