@@ -3,19 +3,11 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-ifndef::env-github[]
+[[readme-top]]
 image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors,link=https://github.com/dev-centr/toolchain-advisor/graphs/contributors]
 image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks,link=https://github.com/dev-centr/toolchain-advisor/network/members]
 image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars,link=https://github.com/dev-centr/toolchain-advisor/stargazers]
 image:https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge[Issues,link=https://github.com/dev-centr/toolchain-advisor/issues]
-endif::[]
-
-ifdef::env-github[]
-image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors]
-image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks]
-image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars]
-image:https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge[Issues]
-endif::[]
 
 = toolchain-advisor
 
@@ -27,6 +19,8 @@ link:https://github.com/dev-centr/toolchain-advisor/issues[Request Feature]
 == About The Project
 
 This repository holds the source-of-truth advisor catalog consumed by DevCentr desktop and devcentr.org.
+
+link:#readme-top[back to top]
 
 == Layout
 
@@ -57,6 +51,8 @@ docs/SDL-CONVENTIONS.adoc
 
 Default repo: `https://github.com/dev-centr/toolchain-advisor.git`
 
+link:#readme-top[back to top]
+
 == Related
 
 * DevCentr spec: `devcentr/docs/modules/specifications/pages/components/toolchain-advisor.adoc`
@@ -67,3 +63,5 @@ DevCentr.org — support@devcentr.org
 
 * Project: https://github.com/dev-centr/toolchain-advisor
 * Site: https://devcentr.org
+
+link:#readme-top[back to top]
