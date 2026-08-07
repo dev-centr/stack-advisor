@@ -3,7 +3,27 @@ ifndef::env-github[:icons: font]
 :toclevels: 2
 :sectanchors:
 
-[[readme-top]]
+ifdef::env-github[]
+++++
+<a id="readme-top"></a>
+<div align="center">
+<a href="https://github.com/dev-centr/toolchain-advisor/graphs/contributors"><img src="https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Contributors"></a>
+<a href="https://github.com/dev-centr/toolchain-advisor/network/members"><img src="https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Forks"></a>
+<a href="https://github.com/dev-centr/toolchain-advisor/stargazers"><img src="https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Stars"></a>
+<a href="https://github.com/dev-centr/toolchain-advisor/issues"><img src="https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Issues"></a>
+<br />
+<h3 align="center">toolchain-advisor</h3>
+<p align="center">
+Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, options (with timeline and alternate context), and recommendation rules.<br /><br />
+<a href="https://github.com/dev-centr/toolchain-advisor/issues">Report Bug</a>
+&middot;
+<a href="https://github.com/dev-centr/toolchain-advisor/issues">Request Feature</a>
+</p>
+</div>
+++++
+endif::[]
+
+ifndef::env-github[]
 image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors,link=https://github.com/dev-centr/toolchain-advisor/graphs/contributors]
 image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks,link=https://github.com/dev-centr/toolchain-advisor/network/members]
 image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars,link=https://github.com/dev-centr/toolchain-advisor/stargazers]
@@ -15,6 +35,7 @@ Canonical **definitions** for the DevCentr Toolchain Advisor: decision steps, op
 
 link:https://github.com/dev-centr/toolchain-advisor/issues[Report Bug] ·
 link:https://github.com/dev-centr/toolchain-advisor/issues[Request Feature]
+endif::[]
 
 == About The Project
 
