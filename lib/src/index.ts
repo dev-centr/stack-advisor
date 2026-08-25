@@ -141,6 +141,16 @@ export function findOption(
   return step?.options.find((o) => o.id === optionId);
 }
 
+/** Empty string means “unset” (DIY mode); do not score that criterion. */
+function chosenOption(
+  selections: Record<string, string>,
+  stepId: string,
+): string | undefined {
+  const chosen = selections[stepId];
+  if (chosen == null || chosen === "") return undefined;
+  return chosen;
+}
+
 export function rankRecommendations(
   recs: AdvisorRecommendation[],
   selections: Record<string, string>,
@@ -154,7 +164,7 @@ export function rankRecommendations(
     for (const [stepId, allowed] of Object.entries(rec.match)) {
       if (!allowed.length) continue;
       criteria++;
-      const chosen = selections[stepId];
+      const chosen = chosenOption(selections, stepId);
       if (chosen == null) continue;
       if (allowed.includes(chosen) || allowed.includes("auto")) {
         score += 2;
@@ -180,6 +190,7 @@ export function pickBestRecommendation(
   return fallback ?? ranked[0];
 }
 
+/** Guided mode: preload the first option on every step for a fast path. */
 export function initialSelections(catalog: AdvisorCatalog): Record<string, string> {
   const selections: Record<string, string> = {};
   for (const step of catalog.steps) {
@@ -188,6 +199,31 @@ export function initialSelections(catalog: AdvisorCatalog): Record<string, strin
     }
   }
   return selections;
+}
+
+/** DIY mode: no constraints until the user picks options. */
+export function emptySelections(catalog: AdvisorCatalog): Record<string, string> {
+  const selections: Record<string, string> = {};
+  for (const step of catalog.steps) {
+    selections[step.id] = "";
+  }
+  return selections;
+}
+
+export function filterOptions(
+  step: AdvisorStep,
+  query: string,
+): AdvisorOption[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return step.options;
+  return step.options.filter(
+    (o) => o.label.toLowerCase().includes(q) || o.id.toLowerCase().includes(q),
+  );
+}
+
+/** Prefer grid of icon buttons when the option set stays small. */
+export function prefersIconGrid(step: AdvisorStep, max = 8): boolean {
+  return step.options.length > 0 && step.options.length <= max;
 }
 
 /** Web loads compiled JSON bundled at build time (from git checkout + compile). */

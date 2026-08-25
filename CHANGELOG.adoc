@@ -1,0 +1,12 @@
+= Changelog
+
+Functional changes for `dev-centr/toolchain-advisor` (definitions + Toolchain Browser web app).
+
+== 2026-08-25 — Toolchain Browser web app + filter fix
+
+* Extracted the interactive **Toolchain Browser** UI into `web/` (standalone Vite/Solid SPA + package import for devcentr.org).
+* Modes: **Guided path** (preload) and **Build filters** (DIY gated levels).
+* Focus one level at a time with a breadcrumb strip; small option sets use an icon grid.
+* Core: empty selections are unset for ranking; helpers `emptySelections`, `filterOptions`, `prefersIconGrid`.
+* Standalone deploy: GitHub Pages workflow → `https://dev-centr.github.io/toolchain-advisor/`.
+* See link:changelog-details/2026-08-25 - toolchain-browser-web.adoc[Detailed changelog].

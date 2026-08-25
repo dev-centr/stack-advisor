@@ -1,2 +1,5 @@
 node_modules/
+web/node_modules/
+web/dist/
+web/public/catalog/
 .DS_Store

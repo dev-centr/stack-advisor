@@ -1,0 +1,16 @@
+= 2026-08-25 — Toolchain Browser web app + filter fix
+
+::description: Standalone Toolchain Browser SPA under web/; guided vs DIY modes; ranking treats empty as unset.
+
+The public product is **Toolchain Browser**. This repo remains the definitions home (`toolchain-advisor`) and now also ships the browser UI.
+
+== What changed
+
+* `web/` — Vite + Solid SPA (`@dev-centr/toolchain-browser`) with Guided / DIY modes, crumb navigation, icon marks, and dense icon grids for small levels.
+* `lib/` — `emptySelections`, `filterOptions`, `prefersIconGrid`; ranking skips empty-string selections so DIY partial constraints work.
+* GitHub Pages workflow builds `web/dist` for a standalone URL.
+* Consumers: DevCentr desktop still reads SDL from git; **devcentr.org** aliases the web package (same source, no forked UI).
+
+== Filter bug
+
+Desktop list filtering previously forced `selectedItemIndex = 0` without updating the committed option id — Primary language highlight and advice could disagree. Desktop UI now preserves the selection under filter; the web UI never auto-reselects on filter and shows a status chip when the selection is hidden by the query.
