@@ -158,7 +158,7 @@
 }
 
 .tb-path-seg + .tb-path-seg {
-  /* Soft join: no gap; slash is the connector. */
+  /* Vertical divider between segments. */
   box-shadow: inset 1px 0 0 color-mix(in srgb, var(--tb-border) 70%, transparent);
 }
 
@@ -233,13 +233,13 @@
     0 0 6px color-mix(in srgb, #22c55e 55%, transparent);
 }
 
-/* × sits left of the slash. */
+/* × sits left of the segment join (before insert + / next divider). */
 .tb-path-clear {
   appearance: none;
   border: none;
   background: transparent;
   color: var(--tb-muted);
-  padding: 0 0.15rem 0 0.1rem;
+  padding: 0 0.2rem 0 0.1rem;
   font: inherit;
   font-size: 0.95rem;
   line-height: 1;
@@ -252,29 +252,15 @@
   opacity: 1;
 }
 
-.tb-path-slash {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.05rem;
-  color: var(--tb-muted);
-  font-family: var(--tb-font);
-  font-size: 0.85rem;
-  font-weight: 400;
-  opacity: 0.45;
-  user-select: none;
-  pointer-events: none;
-}
-
 /*
- * + to the right of the slash: idle = faint connector in the strip;
- * hover/focus = obvious circular button.
+ * + after ×, before the next segment’s vertical divider:
+ * idle = faint connector in the strip; hover/focus = obvious circular button.
  */
 .tb-path-insert {
   appearance: none;
   width: 1.15rem;
   height: 1.15rem;
-  margin: 0 0.28rem 0 0.08rem;
+  margin: 0 0.35rem 0 0.05rem;
   padding: 0;
   border-radius: 50%;
   border: 1px solid transparent;

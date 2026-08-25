@@ -496,9 +496,6 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
                         ×
                       </button>
                     </Show>
-                    <span class="tb-path-slash" aria-hidden="true">
-                      /
-                    </span>
                     <Show when={insertCandidate()}>
                       {(miss) => (
                         <button

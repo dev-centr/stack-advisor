@@ -5,9 +5,9 @@
 == What changed
 
 * Removed the Guided path / Build filters mode split. One flow starts from the sample (first-option) path; **Reset to sample** restores the preload.
-* Filter chrome is a **compound path strip** (linked segments with `/` connectors), not separate chips.
-* **×** (left of the slash) removes a level from the path (or clears the last remaining level’s selection). Off-path levels do not constrain advice.
-* **+** to the right of a slash inserts the next missing catalog level between neighbors; a separate circular **+** outside the strip appends the next missing level.
+* Filter chrome is a **compound path strip** (linked segments with vertical dividers), not separate chips.
+* **×** (left of the divider) removes a level from the path (or clears the last remaining level’s selection). Off-path levels do not constrain advice.
+* **+** after × (before the next segment’s divider) inserts the next missing catalog level between neighbors; a separate circular **+** outside the strip appends the next missing level.
 * Idle insert **+** blends as a connector; hover/focus makes it an obvious button (plus, not ×).
 * Segments use the UI sans font, level numbers, and a green indicator when set — no literal “set” label.
 * Selecting an option no longer auto-advances to the next level.
