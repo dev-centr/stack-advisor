@@ -575,3 +575,58 @@
 .tb-source a {
   color: var(--tb-accent);
 }
+
+/*
+ * Named view transitions for level / context panels when focus or selection
+ * changes (see withViewTransition in Browser.tsx).
+ */
+@supports (view-transition-name: none) {
+  .tb-level-col {
+    view-transition-name: tb-level;
+  }
+
+  .tb-context {
+    view-transition-name: tb-context;
+  }
+
+  .tb-path-row {
+    view-transition-name: tb-path;
+  }
+
+  @keyframes tb-vt-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes tb-vt-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(tb-level),
+    ::view-transition-old(tb-context) {
+      animation: tb-vt-fade-out 140ms ease-out both;
+    }
+
+    ::view-transition-new(tb-level),
+    ::view-transition-new(tb-context) {
+      animation: tb-vt-fade-in 180ms ease-out both;
+    }
+
+    ::view-transition-group(tb-path) {
+      animation-duration: 160ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tb-level-col,
+    .tb-context,
+    .tb-path-row {
+      view-transition-name: none;
+    }
+  }
+}
+

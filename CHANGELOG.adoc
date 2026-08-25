@@ -2,6 +2,13 @@
 
 Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor web app).
 
+== 2026-08-25 — View transitions on level changes
+
+* Focus, selection, path insert/remove, and reset wrap DOM updates in the View Transitions API.
+* Level column, context panel, and path strip use named transitions with a short crossfade.
+* Respects `prefers-reduced-motion`.
+* See link:changelog-details/2026-08-25 - view-transitions.adoc[Detailed changelog].
+
 == 2026-08-25 — Unified filter path + host icons
 
 * One filter flow from the sample path — no Guided / Build mode split; clear levels with ×; **Reset to sample**.

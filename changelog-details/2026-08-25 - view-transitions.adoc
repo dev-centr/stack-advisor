@@ -1,0 +1,24 @@
+= View transitions on level changes
+
+Audience:: visitors using Stack Advisor (standalone or site embed)
+Usage context:: browsing
+Orig author:: Auto on behalf of Ryan
+Last author:: Auto on behalf of Ryan
+
+== What changed
+
+Selecting an option, changing the focused level, inserting or removing a path
+segment, or resetting the sample path now updates the UI inside a browser
+**View Transition** when the API is available.
+
+== Behavior
+
+* The level column (`tb-level`) and context panel (`tb-context`) crossfade.
+* The path strip participates as a named group so segment changes stay calm.
+* When `prefers-reduced-motion: reduce` is set, updates apply with no transition.
+
+== Why
+
+Same-document state changes felt abrupt next to the host site's route
+crossfades. Named transitions keep the chrome in place while the decision
+panels settle.

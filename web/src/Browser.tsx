@@ -22,6 +22,26 @@ import {
 import { optionMark, type OptionMark } from "./icons";
 import "./browser.css";
 
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+function supportsViewTransitions(): boolean {
+  return typeof document !== "undefined" && typeof document.startViewTransition === "function";
+}
+
+/** Crossfade level/context panels when focus or selection changes. */
+function withViewTransition(update: () => void): void {
+  if (prefersReducedMotion() || !supportsViewTransitions()) {
+    update();
+    return;
+  }
+  document.startViewTransition(update);
+}
+
 export type StackAdvisorProps = {
   /** `site` remaps colors to host CSS variables; `standalone` uses local theme. */
   embed?: "site" | "standalone";
@@ -332,27 +352,40 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
   });
 
   const loadSample = (data: AdvisorCatalog) => {
-    setSelections(initialSelections(data));
-    setPathIds(data.steps.map((s) => s.id));
-    setFocusStepId(data.steps[0]?.id ?? "");
+    withViewTransition(() => {
+      setSelections(initialSelections(data));
+      setPathIds(data.steps.map((s) => s.id));
+      setFocusStepId(data.steps[0]?.id ?? "");
+    });
   };
 
   const addToPath = (stepId: string) => {
-    setPathIds((prev) => sortPathIds(steps(), [...prev, stepId]));
-    setFocusStepId(stepId);
+    withViewTransition(() => {
+      setPathIds((prev) => sortPathIds(steps(), [...prev, stepId]));
+      setFocusStepId(stepId);
+    });
   };
 
   const removeFromPath = (stepId: string) => {
-    const next = pathIds().filter((id) => id !== stepId);
-    setPathIds(next);
-    setSelections((prev) => ({ ...prev, [stepId]: "" }));
-    if (focusStepId() === stepId) {
-      setFocusStepId(next[next.length - 1] ?? next[0] ?? "");
-    }
+    withViewTransition(() => {
+      const next = pathIds().filter((id) => id !== stepId);
+      setPathIds(next);
+      setSelections((prev) => ({ ...prev, [stepId]: "" }));
+      if (focusStepId() === stepId) {
+        setFocusStepId(next[next.length - 1] ?? next[0] ?? "");
+      }
+    });
   };
 
   const clearLevelSelection = (stepId: string) => {
-    setSelections((prev) => ({ ...prev, [stepId]: "" }));
+    withViewTransition(() => {
+      setSelections((prev) => ({ ...prev, [stepId]: "" }));
+    });
+  };
+
+  const focusLevel = (stepId: string) => {
+    if (focusStepId() === stepId) return;
+    withViewTransition(() => setFocusStepId(stepId));
   };
 
   const reload = async () => {
@@ -376,9 +409,11 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
   });
 
   const selectOption = (stepId: string, optionId: string) => {
-    setSelections((prev) => ({ ...prev, [stepId]: optionId }));
-    // Stay on the level the user clicked — no auto-forward.
-    setFocusStepId(stepId);
+    withViewTransition(() => {
+      setSelections((prev) => ({ ...prev, [stepId]: optionId }));
+      // Stay on the level the user clicked — no auto-forward.
+      setFocusStepId(stepId);
+    });
   };
 
   /** Selections for ranking: only path members constrain; others empty. */
@@ -450,7 +485,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
                       type="button"
                       class="tb-path-main"
                       aria-current={isActive() ? "step" : undefined}
-                      onClick={() => setFocusStepId(step.id)}
+                      onClick={() => focusLevel(step.id)}
                     >
                       <span class="tb-path-num" aria-hidden="true">
                         {index() + 1}
@@ -528,7 +563,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
         </div>
 
         <div class="tb-layout">
-          <div>
+          <div class="tb-level-col">
             <Show when={focusStep()}>
               {(step) => (
                 <LevelPanel
@@ -547,7 +582,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
                     (s) => s.id === focusStepId(),
                   );
                   const prev = pathSteps()[idx - 1];
-                  if (prev) setFocusStepId(prev.id);
+                  if (prev) focusLevel(prev.id);
                 }}
               >
                 Previous
@@ -560,7 +595,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
                     (s) => s.id === focusStepId(),
                   );
                   const next = pathSteps()[idx + 1];
-                  if (next) setFocusStepId(next.id);
+                  if (next) focusLevel(next.id);
                 }}
               >
                 Next level
@@ -570,9 +605,11 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
                   type="button"
                   onClick={() => {
                     const data = catalog()!;
-                    setSelections(emptySelections(data));
-                    setPathIds(data.steps.map((s) => s.id));
-                    setFocusStepId(data.steps[0]?.id ?? "");
+                    withViewTransition(() => {
+                      setSelections(emptySelections(data));
+                      setPathIds(data.steps.map((s) => s.id));
+                      setFocusStepId(data.steps[0]?.id ?? "");
+                    });
                   }}
                 >
                   Clear all
