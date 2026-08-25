@@ -2,6 +2,13 @@
 
 Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor web app).
 
+== 2026-08-25 — Unified filter path + host icons
+
+* One filter flow from the sample path — no Guided / Build mode split; clear levels with ×; **Reset to sample**.
+* Numbered crumbs, sans font, green selection lights; no auto-forward on pick.
+* Host options use licensed SVG marks (Simple Icons / Lucide); WSL is Windows + Linux.
+* See link:changelog-details/2026-08-25 - unified-filter-path.adoc[Detailed changelog].
+
 == 2026-08-25 — Stack Advisor product + repo rename
 
 * Public product name is **Stack Advisor** (stack decision outcome; browse and advice are modes).

@@ -84,45 +84,36 @@
   line-height: 1.5;
 }
 
-.tb-mode-bar {
+.tb-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.65rem;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.tb-mode-bar p {
+.tb-lede-inline {
   margin: 0;
-  flex: 1 1 12rem;
+  flex: 1 1 14rem;
   font-size: 0.8rem;
   color: var(--tb-muted);
   line-height: 1.4;
 }
 
-.tb-seg {
-  display: inline-flex;
-  border: 1px solid var(--tb-border);
-  border-radius: 8px;
+.tb-sample-btn {
+  flex: 0 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  background: var(--tb-surface);
-}
-
-.tb-seg button {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--tb-muted);
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 0.45rem 0.85rem;
-  cursor: pointer;
-}
-
-.tb-seg button[aria-pressed="true"] {
-  background: var(--tb-accent-dim);
-  color: var(--tb-accent);
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .tb-layout {
@@ -141,37 +132,111 @@
 .tb-crumb {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.4rem;
   margin-bottom: 0.85rem;
 }
 
-.tb-crumb button {
-  appearance: none;
+.tb-crumb-item {
+  display: inline-flex;
+  align-items: stretch;
   border: 1px solid var(--tb-border);
   background: var(--tb-surface);
-  color: var(--tb-muted);
   border-radius: 999px;
-  padding: 0.3rem 0.7rem;
-  font: inherit;
-  font-size: 0.72rem;
-  font-family: var(--tb-mono);
-  letter-spacing: 0.04em;
-  cursor: pointer;
+  overflow: hidden;
 }
 
-.tb-crumb button[data-active="true"] {
+.tb-crumb-item[data-active="true"] {
   border-color: var(--tb-accent);
-  color: var(--tb-accent);
   background: var(--tb-accent-dim);
 }
 
-.tb-crumb button[data-set="true"]:not([data-active="true"]) {
+.tb-crumb-main {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--tb-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.55rem 0.32rem 0.45rem;
+  font: inherit;
+  font-family: var(--tb-font);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.tb-crumb-item[data-active="true"] .tb-crumb-main {
+  color: var(--tb-accent);
+}
+
+.tb-crumb-item[data-set="true"]:not([data-active="true"]) .tb-crumb-main {
   color: var(--tb-text);
 }
 
-.tb-crumb button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.tb-crumb-num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.15rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tb-muted) 18%, transparent);
+  color: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tb-crumb-item[data-active="true"] .tb-crumb-num {
+  background: color-mix(in srgb, var(--tb-accent) 22%, transparent);
+}
+
+.tb-crumb-label {
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-crumb-light {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: color-mix(in srgb, var(--tb-muted) 35%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tb-muted) 40%, transparent);
+}
+
+.tb-crumb-light[data-on="true"] {
+  background: #22c55e;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #22c55e 35%, transparent),
+    0 0 6px color-mix(in srgb, #22c55e 55%, transparent);
+}
+
+.tb-crumb-clear {
+  appearance: none;
+  border: none;
+  border-left: 1px solid var(--tb-border);
+  background: transparent;
+  color: var(--tb-muted);
+  padding: 0 0.45rem;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tb-crumb-clear:hover {
+  color: var(--tb-danger);
+  background: color-mix(in srgb, var(--tb-danger) 10%, transparent);
+}
+
+.tb-crumb-item[data-active="true"] .tb-crumb-clear {
+  border-left-color: color-mix(in srgb, var(--tb-accent) 40%, var(--tb-border));
 }
 
 .tb-panel {
@@ -260,11 +325,40 @@
   border-radius: 8px;
   display: grid;
   place-items: center;
+  color: #0b1220;
+  background: var(--mark, #64748b);
+  flex: 0 0 auto;
+}
+
+.tb-glyph--text {
   font-family: var(--tb-mono);
   font-size: 0.78rem;
   font-weight: 600;
-  color: #0b1220;
-  background: var(--mark, #64748b);
+}
+
+.tb-glyph--icon img {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+  /* SVG marks are black; invert to read on the colored tile. */
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+.tb-glyph--pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  padding: 0 0.2rem;
+}
+
+.tb-glyph--pair img {
+  width: 0.95rem;
+  height: 0.95rem;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
 }
 
 .tb-icon-btn span.label {

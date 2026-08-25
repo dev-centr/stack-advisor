@@ -1,0 +1,15 @@
+= 2026-08-25 — Unified filter path + host icons
+
+::description: One sample-based filter flow (no Guided/Build split); numbered crumbs with green lights and clear ×; real host SVGs; no auto-forward.
+
+== What changed
+
+* Removed the Guided path / Build filters mode split. One flow starts from the sample (first-option) path; users clear levels with ×; **Reset to sample** restores the preload.
+* Breadcrumb strip uses the UI sans font (not mono), shows level numbers, a green indicator when a level is set, and a clear control — no literal “set” label.
+* Selecting an option no longer auto-advances to the next level.
+* Host and related options use committed SVG marks (Simple Icons CC0 + Lucide ISC) instead of homemade glyphs; WSL uses a Windows + Linux pair.
+* Advice still treats cleared levels as unconstrained.
+
+== See also
+
+* Icon licenses: `web/src/assets/icons/LICENSES.md`

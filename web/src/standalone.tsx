@@ -12,8 +12,8 @@ render(
       <p class="tb-brand">DevCentr · Stack</p>
       <h1>Stack Advisor</h1>
       <p class="tb-lede">
-        Choose a host · target · language · toolchain stack. Browse and advice
-        modes share the same SDL definitions as DevCentr desktop.
+        Choose a host · target · language · toolchain stack. A sample path is
+        preloaded; clear levels with ×. Same SDL definitions as DevCentr desktop.
       </p>
       <StackAdvisor
         embed="standalone"

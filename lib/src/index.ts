@@ -141,7 +141,7 @@ export function findOption(
   return step?.options.find((o) => o.id === optionId);
 }
 
-/** Empty string means “unset” (DIY mode); do not score that criterion. */
+/** Empty string means “unset”; do not score that criterion. */
 function chosenOption(
   selections: Record<string, string>,
   stepId: string,
@@ -190,7 +190,7 @@ export function pickBestRecommendation(
   return fallback ?? ranked[0];
 }
 
-/** Guided mode: preload the first option on every step for a fast path. */
+/** Sample / default path: first option on every step. */
 export function initialSelections(catalog: AdvisorCatalog): Record<string, string> {
   const selections: Record<string, string> = {};
   for (const step of catalog.steps) {
@@ -201,7 +201,7 @@ export function initialSelections(catalog: AdvisorCatalog): Record<string, strin
   return selections;
 }
 
-/** DIY mode: no constraints until the user picks options. */
+/** All levels cleared — unconstrained advice until the user picks options. */
 export function emptySelections(catalog: AdvisorCatalog): Record<string, string> {
   const selections: Record<string, string> = {};
   for (const step of catalog.steps) {
