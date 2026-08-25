@@ -7,6 +7,7 @@ Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor we
 * One filter flow from the sample path — no Guided / Build mode split; clear levels with ×; **Reset to sample**.
 * Numbered crumbs, sans font, green selection lights; no auto-forward on pick.
 * Host options use licensed SVG marks (Simple Icons / Lucide); WSL is Windows + Linux.
+* Compound path strip with slash connectors; **+** between segments inserts a missing level; circular **+** outside appends.
 * See link:changelog-details/2026-08-25 - unified-filter-path.adoc[Detailed changelog].
 
 == 2026-08-25 — Stack Advisor product + repo rename

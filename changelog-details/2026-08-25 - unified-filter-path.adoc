@@ -1,14 +1,17 @@
 = 2026-08-25 — Unified filter path + host icons
 
-::description: One sample-based filter flow (no Guided/Build split); numbered crumbs with green lights and clear ×; real host SVGs; no auto-forward.
+::description: One sample-based filter flow (no Guided/Build split); compound path strip with insert +; numbered segments with green lights; real host SVGs; no auto-forward.
 
 == What changed
 
-* Removed the Guided path / Build filters mode split. One flow starts from the sample (first-option) path; users clear levels with ×; **Reset to sample** restores the preload.
-* Breadcrumb strip uses the UI sans font (not mono), shows level numbers, a green indicator when a level is set, and a clear control — no literal “set” label.
+* Removed the Guided path / Build filters mode split. One flow starts from the sample (first-option) path; **Reset to sample** restores the preload.
+* Filter chrome is a **compound path strip** (linked segments with `/` connectors), not separate chips.
+* **×** (left of the slash) removes a level from the path (or clears the last remaining level’s selection). Off-path levels do not constrain advice.
+* **+** to the right of a slash inserts the next missing catalog level between neighbors; a separate circular **+** outside the strip appends the next missing level.
+* Idle insert **+** blends as a connector; hover/focus makes it an obvious button (plus, not ×).
+* Segments use the UI sans font, level numbers, and a green indicator when set — no literal “set” label.
 * Selecting an option no longer auto-advances to the next level.
-* Host and related options use committed SVG marks (Simple Icons CC0 + Lucide ISC) instead of homemade glyphs; WSL uses a Windows + Linux pair.
-* Advice still treats cleared levels as unconstrained.
+* Host and related options use committed SVG marks (Simple Icons CC0 + Lucide ISC); WSL uses a Windows + Linux pair.
 
 == See also
 
