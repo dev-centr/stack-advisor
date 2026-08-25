@@ -1,5 +1,5 @@
 {
-  "name": "@dev-centr/toolchain-advisor-core",
+  "name": "@dev-centr/stack-advisor-core",
   "version": "0.1.0",
   "private": true,
   "type": "module",

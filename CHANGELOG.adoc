@@ -1,12 +1,20 @@
 = Changelog
 
-Functional changes for `dev-centr/toolchain-advisor` (definitions + Toolchain Browser web app).
+Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor web app).
+
+== 2026-08-25 — Stack Advisor product + repo rename
+
+* Public product name is **Stack Advisor** (stack decision outcome; browse and advice are modes).
+* GitHub repository renamed `toolchain-advisor` → `stack-advisor`.
+* Packages: `@dev-centr/stack-advisor`, `@dev-centr/stack-advisor-core`.
+* Standalone Pages base/URL: `https://dev-centr.github.io/stack-advisor/`.
+* See link:changelog-details/2026-08-25 - stack-advisor-rename.adoc[Detailed changelog].
 
 == 2026-08-25 — Toolchain Browser web app + filter fix
 
-* Extracted the interactive **Toolchain Browser** UI into `web/` (standalone Vite/Solid SPA + package import for devcentr.org).
+* Extracted the interactive UI into `web/` (standalone Vite/Solid SPA + package import for devcentr.org).
 * Modes: **Guided path** (preload) and **Build filters** (DIY gated levels).
 * Focus one level at a time with a breadcrumb strip; small option sets use an icon grid.
 * Core: empty selections are unset for ranking; helpers `emptySelections`, `filterOptions`, `prefersIconGrid`.
-* Standalone deploy: GitHub Pages workflow → `https://dev-centr.github.io/toolchain-advisor/`.
+* Standalone deploy: GitHub Pages workflow (historically under the prior repo name).
 * See link:changelog-details/2026-08-25 - toolchain-browser-web.adoc[Detailed changelog].

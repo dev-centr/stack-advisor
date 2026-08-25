@@ -46,7 +46,7 @@ export type AdvisorCatalog = {
 };
 
 export const DEFAULT_DEFINITIONS_REPO =
-  "https://github.com/dev-centr/toolchain-advisor.git";
+  "https://github.com/dev-centr/stack-advisor.git";
 
 function parseOption(optVal: Record<string, unknown>): AdvisorOption {
   const opt: AdvisorOption = {

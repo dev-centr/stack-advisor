@@ -1,4 +1,4 @@
-= SDL conventions for toolchain-advisor
+= SDL conventions for Stack Advisor
 
 The catalog is authored in SDL, not JSON. JSON (`catalog/advisor.json`) is a **compiled artifact** for the static site bundle.
 
@@ -84,8 +84,8 @@ From monorepo (requires DMD + `devcentr/app` dependencies):
 ----
 cd devcentr/app
 dub run --config=compile-catalog -- \
-  ../../toolchain-advisor/catalog/advisor.sdl \
-  ../../toolchain-advisor/catalog/advisor.json
+  ../../stack-advisor/catalog/advisor.sdl \
+  ../../stack-advisor/catalog/advisor.json
 ----
 
 Commit both `.sdl` and regenerated `.json` when prose or rules change.

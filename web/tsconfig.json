@@ -11,7 +11,7 @@
     "noEmit": true,
     "types": ["vite/client"],
     "paths": {
-      "@dev-centr/toolchain-advisor-core": ["../lib/src/index.ts"]
+      "@dev-centr/stack-advisor-core": ["../lib/src/index.ts"]
     }
   },
   "include": ["src"]

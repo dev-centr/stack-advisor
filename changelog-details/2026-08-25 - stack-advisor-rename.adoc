@@ -1,0 +1,12 @@
+= 2026-08-25 — Stack Advisor product + repo rename
+:description: Product renamed to Stack Advisor; GitHub repo and packages aligned.
+
+The public product is **Stack Advisor**. Browse and advice remain modes of the same tool; the noun is the stack decision outcome.
+
+== Changes
+
+* Repository: `dev-centr/toolchain-advisor` → `dev-centr/stack-advisor`.
+* Packages: `@dev-centr/stack-advisor` (was `toolchain-browser`), `@dev-centr/stack-advisor-core` (was `toolchain-advisor-core`).
+* Vite `base` and GitHub Pages URL: `/stack-advisor/`.
+* UI export: `StackAdvisor` (legacy `ToolchainBrowser` alias retained).
+* Catalog id: `dev-centr/stack-advisor`.

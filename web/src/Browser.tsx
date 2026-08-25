@@ -18,17 +18,20 @@ import {
   type AdvisorCatalog,
   type AdvisorOption,
   type AdvisorStep,
-} from "@dev-centr/toolchain-advisor-core";
+} from "@dev-centr/stack-advisor-core";
 import { optionMark } from "./icons";
 import "./browser.css";
 
 export type BrowseMode = "guided" | "diy";
 
-export type ToolchainBrowserProps = {
+export type StackAdvisorProps = {
   /** `site` remaps colors to host CSS variables; `standalone` uses local theme. */
   embed?: "site" | "standalone";
   catalogPath?: string;
 };
+
+/** @deprecated Use StackAdvisorProps */
+export type ToolchainBrowserProps = StackAdvisorProps;
 
 function OptionGlyph(props: { id: string }) {
   const m = () => optionMark(props.id);
@@ -221,7 +224,7 @@ const ContextPanel: Component<{
   );
 };
 
-export const ToolchainBrowser: Component<ToolchainBrowserProps> = (props) => {
+export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
   const [catalog, setCatalog] = createSignal<AdvisorCatalog | null>(null);
   const [mode, setMode] = createSignal<BrowseMode>("guided");
   const [selections, setSelections] = createSignal<Record<string, string>>({});
@@ -423,17 +426,19 @@ export const ToolchainBrowser: Component<ToolchainBrowserProps> = (props) => {
         <p class="tb-source">
           Definitions from{" "}
           <a
-            href="https://github.com/dev-centr/toolchain-advisor"
+            href="https://github.com/dev-centr/stack-advisor"
             target="_blank"
             rel="noopener noreferrer"
           >
-            dev-centr/toolchain-advisor
+            dev-centr/stack-advisor
           </a>
-          . Advice is a feature of browsing.
+          . Browse and advice are modes of Stack Advisor.
         </p>
       </Show>
     </div>
   );
 };
 
-export default ToolchainBrowser;
+/** @deprecated Use StackAdvisor */
+export const ToolchainBrowser = StackAdvisor;
+export default StackAdvisor;

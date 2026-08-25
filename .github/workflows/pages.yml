@@ -1,4 +1,4 @@
-name: Deploy Toolchain Browser
+name: Deploy Stack Advisor
 
 on:
   push:

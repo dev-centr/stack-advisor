@@ -7,10 +7,10 @@ const root = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [solid()],
-  base: "/toolchain-advisor/",
+  base: "/stack-advisor/",
   resolve: {
     alias: {
-      "@dev-centr/toolchain-advisor-core": resolve(
+      "@dev-centr/stack-advisor-core": resolve(
         root,
         "../lib/src/index.ts",
       ),

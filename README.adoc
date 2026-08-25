@@ -7,42 +7,42 @@ ifdef::env-github[]
 ++++
 <a id="readme-top"></a>
 <div align="center">
-<a href="https://github.com/dev-centr/toolchain-advisor/graphs/contributors"><img src="https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Contributors"></a>
-<a href="https://github.com/dev-centr/toolchain-advisor/network/members"><img src="https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Forks"></a>
-<a href="https://github.com/dev-centr/toolchain-advisor/stargazers"><img src="https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Stars"></a>
-<a href="https://github.com/dev-centr/toolchain-advisor/issues"><img src="https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge" alt="Issues"></a>
+<a href="https://github.com/dev-centr/stack-advisor/graphs/contributors"><img src="https://img.shields.io/github/contributors/dev-centr/stack-advisor.svg?style=for-the-badge" alt="Contributors"></a>
+<a href="https://github.com/dev-centr/stack-advisor/network/members"><img src="https://img.shields.io/github/forks/dev-centr/stack-advisor.svg?style=for-the-badge" alt="Forks"></a>
+<a href="https://github.com/dev-centr/stack-advisor/stargazers"><img src="https://img.shields.io/github/stars/dev-centr/stack-advisor.svg?style=for-the-badge" alt="Stars"></a>
+<a href="https://github.com/dev-centr/stack-advisor/issues"><img src="https://img.shields.io/github/issues/dev-centr/stack-advisor.svg?style=for-the-badge" alt="Issues"></a>
 <br />
-<h3 align="center">toolchain-advisor</h3>
+<h3 align="center">Stack Advisor</h3>
 <p align="center">
-Canonical **definitions** and the **Toolchain Browser** web app for DevCentr: decision steps, options (with timeline and alternate context), recommendation rules, and the browse UI.<br /><br />
-<a href="https://github.com/dev-centr/toolchain-advisor/issues">Report Bug</a>
+Canonical <strong>definitions</strong> and the <strong>Stack Advisor</strong> web app for DevCentr: decision steps, options (with timeline and alternate context), recommendation rules, and browse/advice UI.<br /><br />
+<a href="https://github.com/dev-centr/stack-advisor/issues">Report Bug</a>
 &middot;
-<a href="https://github.com/dev-centr/toolchain-advisor/issues">Request Feature</a>
+<a href="https://github.com/dev-centr/stack-advisor/issues">Request Feature</a>
 </p>
 </div>
 ++++
 endif::[]
 
 ifndef::env-github[]
-image:https://img.shields.io/github/contributors/dev-centr/toolchain-advisor.svg?style=for-the-badge[Contributors,link=https://github.com/dev-centr/toolchain-advisor/graphs/contributors]
-image:https://img.shields.io/github/forks/dev-centr/toolchain-advisor.svg?style=for-the-badge[Forks,link=https://github.com/dev-centr/toolchain-advisor/network/members]
-image:https://img.shields.io/github/stars/dev-centr/toolchain-advisor.svg?style=for-the-badge[Stars,link=https://github.com/dev-centr/toolchain-advisor/stargazers]
-image:https://img.shields.io/github/issues/dev-centr/toolchain-advisor.svg?style=for-the-badge[Issues,link=https://github.com/dev-centr/toolchain-advisor/issues]
+image:https://img.shields.io/github/contributors/dev-centr/stack-advisor.svg?style=for-the-badge[Contributors,link=https://github.com/dev-centr/stack-advisor/graphs/contributors]
+image:https://img.shields.io/github/forks/dev-centr/stack-advisor.svg?style=for-the-badge[Forks,link=https://github.com/dev-centr/stack-advisor/network/members]
+image:https://img.shields.io/github/stars/dev-centr/stack-advisor.svg?style=for-the-badge[Stars,link=https://github.com/dev-centr/stack-advisor/stargazers]
+image:https://img.shields.io/github/issues/dev-centr/stack-advisor.svg?style=for-the-badge[Issues,link=https://github.com/dev-centr/stack-advisor/issues]
 
-= toolchain-advisor
+= Stack Advisor
 
-Canonical **definitions** and the **Toolchain Browser** web app for DevCentr: decision steps, options (with timeline and alternate context), recommendation rules, and the browse UI.
+Canonical **definitions** and the **Stack Advisor** web app for DevCentr: decision steps, options (with timeline and alternate context), recommendation rules, and browse/advice UI.
 
-link:https://github.com/dev-centr/toolchain-advisor/issues[Report Bug] ·
-link:https://github.com/dev-centr/toolchain-advisor/issues[Request Feature]
+link:https://github.com/dev-centr/stack-advisor/issues[Report Bug] ·
+link:https://github.com/dev-centr/stack-advisor/issues[Request Feature]
 endif::[]
 
 == About The Project
 
-This repository holds the source-of-truth advisor catalog **and** the Toolchain Browser web UI consumed by DevCentr desktop and https://devcentr.org[devcentr.org].
+This repository holds the source-of-truth advisor catalog **and** the Stack Advisor web UI consumed by DevCentr desktop and https://devcentr.org[devcentr.org].
 
-* Standalone app: https://dev-centr.github.io/toolchain-advisor/
-* Site embed: https://devcentr.org/toolchain-browser
+* Standalone app: https://dev-centr.github.io/stack-advisor/
+* Site embed: https://devcentr.org/stack-advisor
 
 link:#readme-top[back to top]
 
@@ -52,8 +52,8 @@ link:#readme-top[back to top]
 ----
 catalog/advisor.sdl      # Source of truth (author here)
 catalog/advisor.json     # Compiled artifact (web bundle; commit after compile)
-lib/                     # Shared ranking/parser (@dev-centr/toolchain-advisor-core)
-web/                     # Toolchain Browser SPA (@dev-centr/toolchain-browser)
+lib/                     # Shared ranking/parser (@dev-centr/stack-advisor-core)
+web/                     # Stack Advisor SPA (@dev-centr/stack-advisor)
 scripts/compile-sdl.mjs  # SDL → JSON (Node; no DMD required)
 docs/SDL-CONVENTIONS.adoc
 CHANGELOG.adoc
@@ -73,10 +73,10 @@ CHANGELOG.adoc
 
 | Client | How it loads
 | DevCentr desktop | `git clone` / `git pull` → reads `catalog/advisor.sdl`
-| Toolchain Browser (standalone) | GitHub Pages builds `web/` against `catalog/advisor.json`
-| devcentr.org | Build: checkout repo; aliases `@dev-centr/toolchain-browser` + bundles catalog JSON
+| Stack Advisor (standalone) | GitHub Pages builds `web/` against `catalog/advisor.json`
+| devcentr.org | Build: checkout repo; aliases `@dev-centr/stack-advisor` + bundles catalog JSON
 
-Default repo: `https://github.com/dev-centr/toolchain-advisor.git`
+Default repo: `https://github.com/dev-centr/stack-advisor.git`
 
 === Local web app
 
@@ -101,7 +101,7 @@ See link:CHANGELOG.adoc[CHANGELOG.adoc].
 
 DevCentr.org — support@devcentr.org
 
-* Project: https://github.com/dev-centr/toolchain-advisor
+* Project: https://github.com/dev-centr/stack-advisor
 * Site: https://devcentr.org
 
 link:#readme-top[back to top]
