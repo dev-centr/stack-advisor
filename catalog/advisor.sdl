@@ -14,7 +14,8 @@ toolchainAdvisor {
         step {
             id "host"
             title "Host environment"
-            hint "Where you sit and run your editor, terminal, and local builds."
+            selectionMode "multi"
+            hint "Where you sit and run your editor, terminal, and local builds. Select every host you need the stack to support."
 
             option {
                 id "windows-native"
@@ -105,7 +106,8 @@ toolchainAdvisor {
         step {
             id "target"
             title "Target output"
-            hint "What you ship or run when the project is done."
+            selectionMode "multi"
+            hint "What you ship or run when the project is done. Select every target the stack must cover."
 
             option {
                 id "windows-desktop"
@@ -136,15 +138,51 @@ toolchainAdvisor {
         step {
             id "language"
             title "Primary language"
-            hint "Narrows toolchain families."
+            selectionMode "single"
+            hint "Narrows toolchain families. Pick one primary language."
 
-            option { id "cpp" label "C / C++" era "modern" overview "Native compilation; toolchain family choice is critical on Windows." }
-            option { id "dotnet" label "C# / .NET" era "modern" overview ".NET SDK and optional native AOT; WinUI often needs Windows." }
-            option { id "rust" label "Rust" era "modern" overview "rustup targets; MSVC vs GNU ABI on Windows." }
-            option { id "go" label "Go" era "modern" overview "Single binary cross-compile with GOOS/GOARCH." }
-            option { id "python" label "Python" era "modern" overview "Interpreter on host; packaging separate from compiler choice." }
-            option { id "node" label "JavaScript / TypeScript (Node)" era "modern" overview "Node LTS; container parity for production." }
-            option { id "other" label "Other / mixed stack" era "modern" overview "Document your stack in the repo README." }
+            option {
+                id "cpp"
+                label "C / C++"
+                era "modern"
+                overview "Native compilation; toolchain family choice is critical on Windows."
+            }
+            option {
+                id "dotnet"
+                label "C# / .NET"
+                era "modern"
+                overview ".NET SDK and optional native AOT; WinUI often needs Windows."
+            }
+            option {
+                id "rust"
+                label "Rust"
+                era "modern"
+                overview "rustup targets; MSVC vs GNU ABI on Windows."
+            }
+            option {
+                id "go"
+                label "Go"
+                era "modern"
+                overview "Single binary cross-compile with GOOS/GOARCH."
+            }
+            option {
+                id "python"
+                label "Python"
+                era "modern"
+                overview "Interpreter on host; packaging separate from compiler choice."
+            }
+            option {
+                id "node"
+                label "JavaScript / TypeScript (Node)"
+                era "modern"
+                overview "Node LTS; container parity for production."
+            }
+            option {
+                id "other"
+                label "Other / mixed stack"
+                era "modern"
+                overview "Document your stack in the repo README."
+            }
         }
 
         step {

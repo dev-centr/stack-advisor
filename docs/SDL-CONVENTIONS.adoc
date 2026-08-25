@@ -20,6 +20,7 @@ toolchainAdvisor {
 step {
     id "toolchain"
     title "Toolchain family"
+    selectionMode "single"   // single (default) | multi — AND for ranking
     hint "One-line help in the flow box."
 
     option {
@@ -47,6 +48,7 @@ step {
 }
 ----
 
+`selectionMode "multi"` (used for **host** and **target**) lets the user combine options. Ranking uses **AND** semantics: every selected id must appear in the recommendation’s `match` list (or the list includes `auto`). Empty selections do not constrain. Prefer multi-line `option { … }` blocks; one-line `option { id "x" label "Y" … }` is supported by the compiler.
 == Recommendations (ranked guidance)
 
 Rules are **not** leaf nodes in the flow. They aggregate the full selection:

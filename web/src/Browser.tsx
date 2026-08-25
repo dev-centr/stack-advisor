@@ -12,11 +12,13 @@ import {
   filterOptions,
   findOption,
   initialSelections,
+  isMultiStep,
   pickBestRecommendation,
   prefersIconGrid,
   rankRecommendations,
   type AdvisorCatalog,
   type AdvisorOption,
+  type AdvisorSelections,
   type AdvisorStep,
 } from "@dev-centr/stack-advisor-core";
 import { optionMark, type OptionMark } from "./icons";
@@ -113,22 +115,34 @@ function sortPathIds(all: AdvisorStep[], ids: string[]): string[] {
   return all.map((s) => s.id).filter((id) => want.has(id));
 }
 
+function levelIsSet(ids: string[] | undefined): boolean {
+  return Boolean(ids && ids.length > 0);
+}
+
 const LevelPanel: Component<{
   step: AdvisorStep;
-  selection: string;
-  onSelect: (optionId: string) => void;
+  selection: string[];
+  onToggle: (optionId: string) => void;
   onClear?: () => void;
 }> = (props) => {
   const [query, setQuery] = createSignal("");
+  const multi = () => isMultiStep(props.step);
   const visible = createMemo(() => filterOptions(props.step, query()));
   const useGrid = createMemo(() => prefersIconGrid(props.step));
+  const selectedIds = () => props.selection;
+  const isSelected = (id: string) => selectedIds().includes(id);
   const selectedHidden = createMemo(() => {
-    const id = props.selection;
-    if (!id) return false;
-    return !visible().some((o) => o.id === id);
+    const ids = selectedIds();
+    if (!ids.length) return false;
+    return ids.some((id) => !visible().some((o) => o.id === id));
   });
-  const selectedOpt = createMemo(() =>
-    props.step.options.find((o) => o.id === props.selection),
+  const hiddenLabels = createMemo(() =>
+    selectedIds()
+      .filter((id) => !visible().some((o) => o.id === id))
+      .map(
+        (id) => props.step.options.find((o) => o.id === id)?.label ?? id,
+      )
+      .join(", "),
   );
 
   return (
@@ -136,6 +150,11 @@ const LevelPanel: Component<{
       <h2 id={`tb-level-${props.step.id}`}>{props.step.title}</h2>
       <Show when={props.step.hint}>
         <p class="tb-hint">{props.step.hint}</p>
+      </Show>
+      <Show when={multi()}>
+        <p class="tb-multi-hint" role="note">
+          Multi-select — advice must work for every selected option.
+        </p>
       </Show>
       <Show when={!useGrid() || props.step.options.length > 6}>
         <input
@@ -147,26 +166,37 @@ const LevelPanel: Component<{
           aria-label={`Filter ${props.step.title}`}
         />
       </Show>
-      <Show when={selectedHidden() && selectedOpt()}>
+      <Show when={selectedHidden() && hiddenLabels()}>
         <p class="tb-kept" role="status">
-          Selected: {selectedOpt()!.label} (hidden by filter — clear filter or
+          Selected: {hiddenLabels()} (hidden by filter — clear filter or
           pick another)
         </p>
       </Show>
       <Show
         when={useGrid()}
         fallback={
-          <ul class="tb-list">
+          <ul class="tb-list" role={multi() ? "group" : "listbox"}>
             <For each={visible()}>
               {(opt) => (
                 <li>
                   <button
                     type="button"
-                    aria-pressed={props.selection === opt.id}
-                    onClick={() => props.onSelect(opt.id)}
+                    classList={{ "tb-multi-row": multi() }}
+                    role={multi() ? "checkbox" : "option"}
+                    aria-checked={multi() ? isSelected(opt.id) : undefined}
+                    aria-selected={!multi() ? isSelected(opt.id) : undefined}
+                    aria-pressed={isSelected(opt.id)}
+                    onClick={() => props.onToggle(opt.id)}
                   >
+                    <Show when={multi()}>
+                      <span
+                        class="tb-check"
+                        data-on={isSelected(opt.id)}
+                        aria-hidden="true"
+                      />
+                    </Show>
                     <OptionGlyph id={opt.id} />
-                    <span>{opt.label}</span>
+                    <span class="tb-opt-label">{opt.label || opt.id}</span>
                     <Show when={opt.era}>
                       <span class="tb-era">{opt.era}</span>
                     </Show>
@@ -177,26 +207,40 @@ const LevelPanel: Component<{
           </ul>
         }
       >
-        <div class="tb-grid" role="listbox" aria-label={props.step.title}>
+        <div
+          class="tb-grid"
+          role={multi() ? "group" : "listbox"}
+          aria-label={props.step.title}
+          aria-multiselectable={multi() ? true : undefined}
+        >
           <For each={visible()}>
             {(opt: AdvisorOption) => (
               <button
                 type="button"
                 class="tb-icon-btn"
-                role="option"
-                aria-selected={props.selection === opt.id}
-                aria-pressed={props.selection === opt.id}
-                onClick={() => props.onSelect(opt.id)}
+                classList={{ "tb-icon-btn--multi": multi() }}
+                role={multi() ? "checkbox" : "option"}
+                aria-checked={multi() ? isSelected(opt.id) : undefined}
+                aria-selected={!multi() ? isSelected(opt.id) : undefined}
+                aria-pressed={isSelected(opt.id)}
+                onClick={() => props.onToggle(opt.id)}
               >
+                <Show when={multi()}>
+                  <span
+                    class="tb-check tb-check--corner"
+                    data-on={isSelected(opt.id)}
+                    aria-hidden="true"
+                  />
+                </Show>
                 <OptionGlyph id={opt.id} />
-                <span class="label">{opt.label}</span>
+                <span class="label">{opt.label || opt.id}</span>
               </button>
             )}
           </For>
         </div>
       </Show>
       <div class="tb-actions">
-        <Show when={props.selection}>
+        <Show when={levelIsSet(props.selection)}>
           <button type="button" onClick={() => props.onClear?.()}>
             Clear this level
           </button>
@@ -209,20 +253,31 @@ const LevelPanel: Component<{
 const ContextPanel: Component<{
   catalog: AdvisorCatalog;
   focusStepId: string;
-  selections: Record<string, string>;
+  selections: AdvisorSelections;
 }> = (props) => {
-  const opt = createMemo(() =>
-    findOption(
-      props.catalog,
-      props.focusStepId,
-      props.selections[props.focusStepId] ?? "",
-    ),
+  const selectedIds = createMemo(
+    () => props.selections[props.focusStepId] ?? [],
   );
+  const opt = createMemo(() => {
+    const ids = selectedIds();
+    if (!ids.length) return undefined;
+    // Most recently toggled on is last in the array.
+    return findOption(props.catalog, props.focusStepId, ids[ids.length - 1]!);
+  });
   const best = createMemo(() =>
     pickBestRecommendation(
       rankRecommendations(props.catalog.recommendations, props.selections),
     ),
   );
+  const multiLabels = createMemo(() => {
+    const step = props.catalog.steps.find((s) => s.id === props.focusStepId);
+    if (!step || !isMultiStep(step)) return "";
+    const ids = selectedIds();
+    if (ids.length < 2) return "";
+    return ids
+      .map((id) => step.options.find((o) => o.id === id)?.label ?? id)
+      .join(" · ");
+  });
 
   return (
     <aside class="tb-panel tb-context">
@@ -238,6 +293,9 @@ const ContextPanel: Component<{
         {(o) => (
           <>
             <h2>{o().label}</h2>
+            <Show when={multiLabels()}>
+              <p class="tb-multi-selected">Also selected: {multiLabels()}</p>
+            </Show>
             <Show when={o().era}>
               <p>Era: {o().era}</p>
             </Show>
@@ -296,7 +354,7 @@ const ContextPanel: Component<{
 
 export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
   const [catalog, setCatalog] = createSignal<AdvisorCatalog | null>(null);
-  const [selections, setSelections] = createSignal<Record<string, string>>({});
+  const [selections, setSelections] = createSignal<AdvisorSelections>({});
   /** Step ids currently on the filter path (catalog order). */
   const [pathIds, setPathIds] = createSignal<string[]>([]);
   const [focusStepId, setFocusStepId] = createSignal("");
@@ -335,28 +393,38 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
 
   const canAppend = createMemo(() => Boolean(firstMissingOverall()));
 
+  const sameIds = (a: string[] | undefined, b: string[] | undefined) => {
+    const left = a ?? [];
+    const right = b ?? [];
+    return (
+      left.length === right.length && left.every((id, i) => id === right[i])
+    );
+  };
+
+  /** True when path + selections match the sample preload exactly. */
   const sampleLoaded = createMemo(() => {
     const data = catalog();
     if (!data) return false;
     if (pathIds().length !== data.steps.length) return false;
     const sample = initialSelections(data);
     const cur = selections();
-    return data.steps.every((s) => (cur[s.id] ?? "") === (sample[s.id] ?? ""));
+    return data.steps.every((s) => sameIds(cur[s.id], sample[s.id]));
   });
 
-  const pathDirty = createMemo(() => {
-    const data = catalog();
-    if (!data) return false;
-    if (pathIds().length !== data.steps.length) return true;
-    return data.steps.some((s) => !(selections()[s.id] ?? ""));
-  });
+  /** Reset / Clear chrome: only after a sample has been applied and the user diverged. */
+  const showSampleActions = createMemo(
+    () => Boolean(catalog()) && !loading() && !sampleLoaded(),
+  );
+
+  /** Apply sample synchronously (no view transition) — used on first load. */
+  const applySample = (data: AdvisorCatalog) => {
+    setSelections(initialSelections(data));
+    setPathIds(data.steps.map((s) => s.id));
+    setFocusStepId(data.steps[0]?.id ?? "");
+  };
 
   const loadSample = (data: AdvisorCatalog) => {
-    withViewTransition(() => {
-      setSelections(initialSelections(data));
-      setPathIds(data.steps.map((s) => s.id));
-      setFocusStepId(data.steps[0]?.id ?? "");
-    });
+    withViewTransition(() => applySample(data));
   };
 
   const addToPath = (stepId: string) => {
@@ -370,7 +438,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
     withViewTransition(() => {
       const next = pathIds().filter((id) => id !== stepId);
       setPathIds(next);
-      setSelections((prev) => ({ ...prev, [stepId]: "" }));
+      setSelections((prev) => ({ ...prev, [stepId]: [] }));
       if (focusStepId() === stepId) {
         setFocusStepId(next[next.length - 1] ?? next[0] ?? "");
       }
@@ -379,7 +447,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
 
   const clearLevelSelection = (stepId: string) => {
     withViewTransition(() => {
-      setSelections((prev) => ({ ...prev, [stepId]: "" }));
+      setSelections((prev) => ({ ...prev, [stepId]: [] }));
     });
   };
 
@@ -395,8 +463,9 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
       const data = await fetchBundledAdvisorCatalog(
         props.catalogPath ?? "/catalog/advisor.json",
       );
+      // Apply sample before revealing chrome so Reset never flashes dirty.
       setCatalog(data);
-      loadSample(data);
+      applySample(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load catalog");
     } finally {
@@ -408,20 +477,31 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
     void reload();
   });
 
-  const selectOption = (stepId: string, optionId: string) => {
+  const toggleOption = (stepId: string, optionId: string) => {
+    const step = steps().find((s) => s.id === stepId);
+    if (!step) return;
     withViewTransition(() => {
-      setSelections((prev) => ({ ...prev, [stepId]: optionId }));
-      // Stay on the level the user clicked — no auto-forward.
+      setSelections((prev) => {
+        const cur = prev[stepId] ?? [];
+        if (isMultiStep(step)) {
+          const has = cur.includes(optionId);
+          const next = has
+            ? cur.filter((id) => id !== optionId)
+            : [...cur, optionId];
+          return { ...prev, [stepId]: next };
+        }
+        return { ...prev, [stepId]: [optionId] };
+      });
       setFocusStepId(stepId);
     });
   };
 
   /** Selections for ranking: only path members constrain; others empty. */
-  const adviceSelections = createMemo(() => {
+  const adviceSelections = createMemo((): AdvisorSelections => {
     const onPath = new Set(pathIds());
-    const out: Record<string, string> = {};
+    const out: AdvisorSelections = {};
     for (const s of steps()) {
-      out[s.id] = onPath.has(s.id) ? (selections()[s.id] ?? "") : "";
+      out[s.id] = onPath.has(s.id) ? (selections()[s.id] ?? []) : [];
     }
     return out;
   });
@@ -446,10 +526,11 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
         <div class="tb-toolbar">
           <p class="tb-lede-inline">
             A sample path is preloaded. Remove a level with ×; insert with +
-            between segments or at the end. Off-path levels do not constrain
-            advice.
+            between segments or at the end. Host and target allow multiple
+            picks — advice must work for every selection. Off-path levels do
+            not constrain advice.
           </p>
-          <Show when={pathDirty() || !sampleLoaded()}>
+          <Show when={showSampleActions()}>
             <button
               type="button"
               class="primary tb-sample-btn"
@@ -464,7 +545,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
           <nav class="tb-path" aria-label="Filter path">
             <For each={pathSteps()}>
               {(step, index) => {
-                const isSet = () => Boolean(selections()[step.id]);
+                const isSet = () => levelIsSet(selections()[step.id]);
                 const isActive = () => focusStepId() === step.id;
                 const next = () => pathSteps()[index() + 1];
                 const insertCandidate = () =>
@@ -568,8 +649,8 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
               {(step) => (
                 <LevelPanel
                   step={step()}
-                  selection={selections()[step().id] ?? ""}
-                  onSelect={(id) => selectOption(step().id, id)}
+                  selection={selections()[step().id] ?? []}
+                  onToggle={(id) => toggleOption(step().id, id)}
                   onClear={() => clearLevelSelection(step().id)}
                 />
               )}
@@ -600,7 +681,7 @@ export const StackAdvisor: Component<StackAdvisorProps> = (props) => {
               >
                 Next level
               </button>
-              <Show when={catalog() && (pathDirty() || !sampleLoaded())}>
+              <Show when={showSampleActions()}>
                 <button
                   type="button"
                   onClick={() => {

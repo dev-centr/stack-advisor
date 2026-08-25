@@ -1,0 +1,15 @@
+= 2026-08-25 — Multiselect levels + language labels + reset FOUC
+
+::description: Host/target multi-select with AND ranking; fix empty language labels from one-line SDL compile; stop Reset-to-sample flash on load.
+
+== What changed
+
+* **host** and **target** use `selectionMode "multi"` — checkboxes / multi-toggle; advice must cover every selected option (AND).
+* **language**, **toolchain**, and **execution** stay single-select (exclusive primary choice).
+* Selections are `string[]` per level; empty means unset for ranking.
+* SDL compiler now parses multiple tags on one line (`id "…" label "…"`), so primary language labels are no longer empty in `advisor.json`.
+* Initial sample apply is synchronous (no view transition), and Reset/Clear only mount when the path diverges from sample — fixes unstyled Reset flash on load.
+
+== See also
+
+* link:../docs/SDL-CONVENTIONS.adoc[SDL conventions] (`selectionMode`)

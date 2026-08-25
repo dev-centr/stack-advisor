@@ -23,24 +23,57 @@ function tagValues(block, name) {
   return t ? [...t.values] : [];
 }
 
+/** Parse one or more SDL tags on a line (e.g. `id "cpp" label "C / C++"`). */
 function parseTagLine(block, line) {
-  const tagMatch = /^([a-zA-Z][a-zA-Z0-9]*)\s*/.exec(line);
-  if (!tagMatch) return;
-  const tagName = tagMatch[1];
-  const rest = line.slice(tagMatch[0].length).trim();
+  let pos = 0;
+  while (pos < line.length) {
+    while (pos < line.length && /\s/.test(line[pos])) pos++;
+    if (pos >= line.length) break;
 
-  if (rest.startsWith('"""')) {
-    const end = rest.indexOf('"""', 3);
-    const content = end >= 0 ? rest.slice(3, end) : rest.slice(3);
-    block.rawTags.push({ name: tagName, values: [content.trim()] });
-    return;
+    const tagMatch = /^([a-zA-Z][a-zA-Z0-9]*)/.exec(line.slice(pos));
+    if (!tagMatch) break;
+    const tagName = tagMatch[1];
+    pos += tagMatch[0].length;
+    while (pos < line.length && /\s/.test(line[pos])) pos++;
+
+    if (line.slice(pos, pos + 3) === '"""') {
+      const after = line.slice(pos + 3);
+      const end = after.indexOf('"""');
+      const content = end >= 0 ? after.slice(0, end) : after;
+      block.rawTags.push({ name: tagName, values: [content.trim()] });
+      pos = end >= 0 ? pos + 3 + end + 3 : line.length;
+      continue;
+    }
+
+    const values = [];
+    while (pos < line.length) {
+      while (pos < line.length && /\s/.test(line[pos])) pos++;
+      if (pos >= line.length) break;
+      // Next identifier starts another tag on this line.
+      if (line[pos] !== '"' && /^[a-zA-Z_]/.test(line[pos])) break;
+      if (line[pos] === '"') {
+        pos++;
+        let raw = "";
+        while (pos < line.length && line[pos] !== '"') {
+          if (line[pos] === "\\") {
+            pos++;
+            if (pos < line.length) raw += line[pos++];
+            continue;
+          }
+          raw += line[pos++];
+        }
+        if (pos < line.length && line[pos] === '"') pos++;
+        values.push(unquote(raw));
+        continue;
+      }
+      // Unquoted token (e.g. version 1).
+      const tok = /^[^\s"]+/.exec(line.slice(pos));
+      if (!tok) break;
+      values.push(tok[0]);
+      pos += tok[0].length;
+    }
+    block.rawTags.push({ name: tagName, values });
   }
-
-  const values = [];
-  const re = /"((?:\\.|[^"\\])*)"/g;
-  let m;
-  while ((m = re.exec(rest))) values.push(unquote(m[1]));
-  if (values.length) block.rawTags.push({ name: tagName, values });
 }
 
 function findLineEnd(body, pos) {
@@ -209,10 +242,12 @@ function parseSdl(text) {
   const stepsWrap = ta.children.steps?.[0];
   if (stepsWrap) {
     for (const step of stepsWrap.children.step ?? []) {
+      const modeRaw = (tagValues(step, "selectionMode")[0] ?? "single").toLowerCase();
       catalog.steps.push({
         id: tagValues(step, "id")[0] ?? "",
         title: tagValues(step, "title")[0] ?? "",
         hint: tagValues(step, "hint")[0] ?? "",
+        selectionMode: modeRaw === "multi" ? "multi" : "single",
         options: (step.children.option ?? []).map(parseOption),
       });
     }

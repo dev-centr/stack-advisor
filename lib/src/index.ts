@@ -21,10 +21,14 @@ export type AdvisorOption = {
   alternates?: AdvisorAlternate[];
 };
 
+/** Single = exclusive pick; multi = combine options (AND for ranking). */
+export type AdvisorSelectionMode = "single" | "multi";
+
 export type AdvisorStep = {
   id: string;
   title: string;
   hint?: string;
+  selectionMode: AdvisorSelectionMode;
   options: AdvisorOption[];
 };
 
@@ -45,13 +49,16 @@ export type AdvisorCatalog = {
   recommendations: AdvisorRecommendation[];
 };
 
+/** Per-step chosen option ids. Empty array = unset (does not constrain ranking). */
+export type AdvisorSelections = Record<string, string[]>;
+
 export const DEFAULT_DEFINITIONS_REPO =
   "https://github.com/dev-centr/stack-advisor.git";
 
 function parseOption(optVal: Record<string, unknown>): AdvisorOption {
   const opt: AdvisorOption = {
     id: String(optVal.id),
-    label: String(optVal.label),
+    label: String(optVal.label ?? ""),
     era: optVal.era != null ? String(optVal.era) : undefined,
     overview: optVal.overview != null ? String(optVal.overview) : undefined,
   };
@@ -80,6 +87,29 @@ function parseOption(optVal: Record<string, unknown>): AdvisorOption {
   return opt;
 }
 
+function parseSelectionMode(raw: unknown): AdvisorSelectionMode {
+  return String(raw ?? "single").toLowerCase() === "multi" ? "multi" : "single";
+}
+
+/** Normalize legacy string values and missing keys to string[]. */
+export function normalizeSelections(
+  catalog: AdvisorCatalog,
+  raw: Record<string, string | string[] | undefined>,
+): AdvisorSelections {
+  const out: AdvisorSelections = {};
+  for (const step of catalog.steps) {
+    const v = raw[step.id];
+    if (Array.isArray(v)) {
+      out[step.id] = v.filter((id) => typeof id === "string" && id !== "");
+    } else if (typeof v === "string" && v !== "") {
+      out[step.id] = [v];
+    } else {
+      out[step.id] = [];
+    }
+  }
+  return out;
+}
+
 export function parseAdvisorCatalog(data: unknown): AdvisorCatalog {
   if (!data || typeof data !== "object") {
     throw new Error("Invalid catalog: expected object");
@@ -101,6 +131,7 @@ export function parseAdvisorCatalog(data: unknown): AdvisorCatalog {
       id: String(step.id),
       title: String(step.title),
       hint: step.hint != null ? String(step.hint) : undefined,
+      selectionMode: parseSelectionMode(step.selectionMode),
       options: optionsRaw.map((o) => parseOption(o as Record<string, unknown>)),
     };
   });
@@ -141,19 +172,30 @@ export function findOption(
   return step?.options.find((o) => o.id === optionId);
 }
 
-/** Empty string means “unset”; do not score that criterion. */
-function chosenOption(
-  selections: Record<string, string>,
-  stepId: string,
-): string | undefined {
-  const chosen = selections[stepId];
-  if (chosen == null || chosen === "") return undefined;
-  return chosen;
+export function isMultiStep(step: AdvisorStep): boolean {
+  return step.selectionMode === "multi";
 }
 
+/** Empty / missing means “unset”; do not score that criterion. */
+export function chosenOptions(
+  selections: AdvisorSelections,
+  stepId: string,
+): string[] {
+  const chosen = selections[stepId];
+  if (!chosen || chosen.length === 0) return [];
+  return chosen.filter((id) => id !== "");
+}
+
+/**
+ * Rank recommendations against selections.
+ *
+ * Multi-select levels use AND / “works on all selected”: every chosen id must
+ * appear in the rule’s `match` list (or the list includes `auto`). Unset levels
+ * (empty array) do not constrain.
+ */
 export function rankRecommendations(
   recs: AdvisorRecommendation[],
-  selections: Record<string, string>,
+  selections: AdvisorSelections,
 ): AdvisorRecommendation[] {
   const scored = recs.map((rec) => {
     if (rec.id === "fallback") {
@@ -164,9 +206,11 @@ export function rankRecommendations(
     for (const [stepId, allowed] of Object.entries(rec.match)) {
       if (!allowed.length) continue;
       criteria++;
-      const chosen = chosenOption(selections, stepId);
-      if (chosen == null) continue;
-      if (allowed.includes(chosen) || allowed.includes("auto")) {
+      const chosen = chosenOptions(selections, stepId);
+      if (chosen.length === 0) continue;
+      const covers = (id: string) =>
+        allowed.includes(id) || allowed.includes("auto");
+      if (chosen.every(covers)) {
         score += 2;
       } else {
         score -= 4;
@@ -191,21 +235,20 @@ export function pickBestRecommendation(
 }
 
 /** Sample / default path: first option on every step. */
-export function initialSelections(catalog: AdvisorCatalog): Record<string, string> {
-  const selections: Record<string, string> = {};
+export function initialSelections(catalog: AdvisorCatalog): AdvisorSelections {
+  const selections: AdvisorSelections = {};
   for (const step of catalog.steps) {
-    if (step.options.length > 0) {
-      selections[step.id] = step.options[0].id;
-    }
+    selections[step.id] =
+      step.options.length > 0 ? [step.options[0].id] : [];
   }
   return selections;
 }
 
 /** All levels cleared — unconstrained advice until the user picks options. */
-export function emptySelections(catalog: AdvisorCatalog): Record<string, string> {
-  const selections: Record<string, string> = {};
+export function emptySelections(catalog: AdvisorCatalog): AdvisorSelections {
+  const selections: AdvisorSelections = {};
   for (const step of catalog.steps) {
-    selections[step.id] = "";
+    selections[step.id] = [];
   }
   return selections;
 }

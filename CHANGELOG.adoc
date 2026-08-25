@@ -2,6 +2,13 @@
 
 Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor web app).
 
+== 2026-08-25 — Multiselect levels + language labels + reset FOUC
+
+* **Host** and **target** are multi-select (AND ranking: advice must work for every pick); language / toolchain / execution stay single.
+* Fixed empty primary-language labels (SDL one-line option compile dropped `label`).
+* Stopped **Reset to sample** flashing unstyled on load (sample applied before chrome; button only when dirty).
+* See link:changelog-details/2026-08-25 - multiselect-labels-reset-fouc.adoc[Detailed changelog].
+
 == 2026-08-25 — View transitions on level changes
 
 * Focus, selection, path insert/remove, and reset wrap DOM updates in the View Transitions API.
