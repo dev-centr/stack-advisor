@@ -1,0 +1,13 @@
+= 2026-09-10 — Crawlability + no-JS fallback
+
+::description: Add robots.txt + sitemap.xml and a no-JS HTML fallback for the standalone Stack Advisor Pages app.
+
+== What changed
+
+* Added `web/public/robots.txt` and `web/public/sitemap.xml` (Vite copies as-is) for https://dev-centr.github.io/stack-advisor/.
+* `web/index.html` keeps `#root` and includes title, meta description, h1, and a short purpose paragraph for crawlers and no-JS readers.
+* Restored UTF-8 in the document title (`Stack Advisor — DevCentr`).
+
+== See also
+
+* Skill: web-crawlability (agent-rules)

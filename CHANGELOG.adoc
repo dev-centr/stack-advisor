@@ -1,5 +1,12 @@
 = Changelog
 
+== 2026-09-10 — Crawlability + no-JS fallback
+
+* Standalone Vite app ships `web/public/robots.txt` and `web/public/sitemap.xml`.
+* `web/index.html` keeps the `#root` mount and adds a no-JS h1 + purpose paragraph (plus corrected title encoding).
+* See link:changelog-details/2026-09-10 - crawlability-no-js.adoc[Detailed changelog].
+
+
 Functional changes for `dev-centr/stack-advisor` (definitions + Stack Advisor web app).
 
 == 2026-08-25 — Multiselect levels + language labels + reset FOUC

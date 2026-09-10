@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dev-centr.github.io/stack-advisor/sitemap.xml
