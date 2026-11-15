@@ -1,5 +1,6 @@
 ifndef::env-github[:icons: font]
-:toc: preamble
+:toc: macro
+:toc-title:
 :toclevels: 2
 :sectanchors:
 
@@ -36,6 +37,15 @@ Canonical **definitions** and the **Stack Advisor** web app for DevCentr: decisi
 link:https://github.com/dev-centr/stack-advisor/issues[Report Bug] ·
 link:https://github.com/dev-centr/stack-advisor/issues[Request Feature]
 endif::[]
+
+++++
+<details>
+<summary>Table of Contents</summary>
+++++
+toc::[]
+++++
+</details>
+++++
 
 == About The Project
 
